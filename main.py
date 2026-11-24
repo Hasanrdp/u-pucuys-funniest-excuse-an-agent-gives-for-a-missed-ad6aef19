@@ -45,6 +45,14 @@ def main() -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(excuse)
+    # Post-write read-back gate: the bytes on disk must be exactly the
+    # excuse, within the 1-160 character gate.
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        written = f.read()
+    if written != excuse:
+        raise SystemExit("read-back mismatch: entry.txt does not equal the expected excuse")
+    if not 1 <= len(written) <= 160:
+        raise SystemExit("read-back failed: excuse must be 1 to 160 characters")
 
 
 if __name__ == "__main__":
